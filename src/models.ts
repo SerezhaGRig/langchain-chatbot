@@ -1,4 +1,4 @@
-import {ChatOpenAI} from "@langchain/openai/index";
+import {ChatOpenAI} from "@langchain/openai";
 import {tools} from "./tools";
 import {RunnableConfig} from "@langchain/core/runnables";
 import {IState} from "./types";

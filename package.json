@@ -5,7 +5,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node ./build/build.js"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +19,11 @@
     "langchain": "^0.2.7",
     "multiformats": "^9.9.0",
     "ts-node": "^10.9.2",
-    "tsx": "^4.15.7"
+    "tsx": "^4.15.7",
+    "typescript": "^5.5.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.21.5",
+    "esbuild-plugin-tsc": "^0.4.0"
   }
 }
