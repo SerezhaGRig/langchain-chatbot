@@ -8,7 +8,7 @@ const searchTool = new DynamicStructuredTool({
     description:
         "Use to fetch current information and retrieve other information.",
     schema: z.object({
-        query: z.string().describe("The query to use in your search."),
+        query: z.string().describe("The info to use in response"),
     }),
     func: async ({}: { query: string }) => {
         // This is a placeholder for the actual implementation
