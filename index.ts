@@ -31,19 +31,14 @@ function shouldContinue(messages: BaseMessage[]): "action" | typeof END {
 
 const tools = [new TavilySearchResults({ maxResults: 1, apiKey: TAVILY_API_KEY })];
 
-const model = new ChatGroq({ model: "llama3-8b-8192", apiKey: GROQ_API_KEY,}).bindTools(tools);
+const model = new ChatGroq({ model: "llama3-8b-8192", apiKey: GROQ_API_KEY,})
 
 const workflow = new MessageGraph()
-    .addNode("my-node", (state)=>{
-        console.log(util.inspect(state))
-        return state
-    })
     .addNode("agent", model)
     .addNode("action", new ToolNode<BaseMessage[]>(tools));
 
 
-workflow.addEdge(START, "my-node");
-workflow.addEdge("my-node", "agent")
+workflow.addEdge(START, "agent");
 // Conditional agent -> action OR agent -> END
 workflow.addConditionalEdges("agent", shouldContinue);
 // Always transition `action` -> `agent`
@@ -58,7 +53,12 @@ const app = workflow.compile({ checkpointer: memory, interruptBefore: ["action"]
 const thread = { configurable: { thread_id: "4" } };
 const main = async ()=>{
     const result = await app.invoke("what is the weather in sf currently" , { ...thread })
-    console.info('result', util.inspect(result, { depth: 8}))
+    result.forEach(r=>{
+        if(r?.content){
+            console.info('ai', r.content)
+        }
+    })
+
 }
 main().then(()=>{
     console.log('success')
