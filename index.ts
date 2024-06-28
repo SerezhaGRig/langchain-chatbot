@@ -1,7 +1,7 @@
 import { ToolNode } from "@langchain/langgraph/prebuilt"
 
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search"
-import { ChatGroq } from "@langchain/groq";
+import { ChatOpenAI } from "@langchain/openai";
 import { AIMessage, BaseMessage } from "@langchain/core/messages";
 
 
@@ -10,8 +10,8 @@ import { SqliteSaver } from "@langchain/langgraph/checkpoint/sqlite"
 import { START, END, MessageGraph } from "@langchain/langgraph"
 import * as util from "util";
 
-const GROQ_API_KEY = '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'
-const TAVILY_API_KEY='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'
+const TAVILY_API_KEY='xxxx'
+const OPENAI_API_KEY = 'xxxx'
 
 // Define the function that determines whether to continue or not
 function shouldContinue(messages: BaseMessage[]): "action" | typeof END {
@@ -31,7 +31,7 @@ function shouldContinue(messages: BaseMessage[]): "action" | typeof END {
 
 const tools = [new TavilySearchResults({ maxResults: 1, apiKey: TAVILY_API_KEY })];
 
-const model = new ChatGroq({ model: "llama3-8b-8192", apiKey: GROQ_API_KEY,})
+const model = new ChatOpenAI({ model: "gpt-4o", apiKey: OPENAI_API_KEY,})
 
 const workflow = new MessageGraph()
     .addNode("agent", model)
