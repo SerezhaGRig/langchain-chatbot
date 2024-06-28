@@ -6,7 +6,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node ./build/build.js"
+    "build": "node ./build/build.js",
+    "start": "node ./esBundle/bundle.js"
   },
   "keywords": [],
   "author": "",
