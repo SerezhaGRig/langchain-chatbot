@@ -10,6 +10,9 @@ import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { IState } from "./types";
 import { callModel } from "./models";
 import { toolNode } from "./tools";
+import { question } from "./helper";
+
+
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -46,7 +49,7 @@ const memory = new MemorySaver();
 const app = workflow.compile({ checkpointer: memory });
 
 const sendMessage = async (message: string) => {
-  const config = { configurable: { thread_id: "conversation-num-100" } };
+  const config = { configurable: { thread_id: "conversation-num-200" } };
   const inputs = { messages: [new HumanMessage({ content: message })] };
   for await (const { messages } of await app.stream(inputs, {
     ...config,
@@ -58,15 +61,20 @@ const sendMessage = async (message: string) => {
       if (msg instanceof AIMessage) {
         console.log("AI Assistant:", msg.content);
         console.log("-----\n");
-      } else if (msg instanceof HumanMessage) {
-        console.log("User:", msg.content);
-        console.log("-----\n");
       }
+      // } else if (msg instanceof HumanMessage) {
+      //   console.log("User:", msg.content);
+      //   console.log("-----\n");
+      // }
     }
   }
 };
 
+
 const run = async () => {
-  await sendMessage("give me good typescript eslint rules json");
+  while(true){
+    let answer = await question('User: ');
+    await sendMessage(answer)
+  }
 };
 run();
