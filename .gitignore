@@ -5,6 +5,7 @@
 **/.nyc_output
 **/.webpack
 **/.esbuild
+./esBundle
 .build
 .env-cmdrc
 ./devicebitsSeedLogs
