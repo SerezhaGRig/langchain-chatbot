@@ -12,8 +12,6 @@ import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
 
-
-
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
   messages: {
@@ -70,11 +68,11 @@ const sendMessage = async (message: string) => {
   }
 };
 
-
 const run = async () => {
-  while(true){
-    let answer = await question('User: ');
-    await sendMessage(answer)
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const answer = await question("User: ");
+    await sendMessage(answer);
   }
 };
 run();
