@@ -1,6 +1,6 @@
 import { ToolNode } from "@langchain/langgraph/prebuilt";
 import { BaseMessage } from "@langchain/core/messages";
-import { retrieverTool } from "./retrieverTool";
+import { memoryStoreRetrieverTool } from "./memoryStoreRetrieverTool";
 
-export const tools = [retrieverTool];
+export const tools = [memoryStoreRetrieverTool];
 export const toolNode = new ToolNode<{ messages: BaseMessage[] }>(tools);
