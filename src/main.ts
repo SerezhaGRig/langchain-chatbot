@@ -67,6 +67,7 @@ const sendMessage = async (message: string) => {
 };
 
 const run = async () => {
-  await sendMessage("give me good typescript eslint rules json");
+  await sendMessage("What is weather in New York?");
+  await sendMessage("Is cold in New York now?");
 };
 run();
