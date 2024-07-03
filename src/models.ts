@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
-import { tools } from "./tools";
 import { RunnableConfig } from "@langchain/core/runnables";
 import { IState } from "./types";
+import { tools } from "./tools";
 
 const models = new ChatOpenAI({ model: "gpt-4o" });
 const boundModel = models.bindTools(tools);

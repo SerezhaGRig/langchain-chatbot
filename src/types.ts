@@ -1,5 +1,5 @@
-import {BaseMessage} from '@langchain/core/messages';
+import { BaseMessage } from "@langchain/core/messages";
 
 export interface IState {
-    messages: BaseMessage[];
+  messages: BaseMessage[];
 }

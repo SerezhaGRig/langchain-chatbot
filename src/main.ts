@@ -10,6 +10,8 @@ import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { IState } from "./types";
 import { callModel } from "./models";
 import { toolNode } from "./tools";
+import { question } from "./helper";
+import { loadMemoryVectorStore } from "./vectorStore/memoryVectorStore";
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -27,6 +29,7 @@ const routeMessage = (state: IState) => {
   if (!lastMessage.tool_calls?.length) {
     return END;
   }
+  console.log("tool call");
   // Otherwise if there is, we continue and call the tools
   return "tools";
 };
@@ -46,28 +49,32 @@ const memory = new MemorySaver();
 const app = workflow.compile({ checkpointer: memory });
 
 const sendMessage = async (message: string) => {
-  const config = { configurable: { thread_id: "conversation-num-100" } };
+  const config = { configurable: { thread_id: "conversation-num-200" } };
   const inputs = { messages: [new HumanMessage({ content: message })] };
   for await (const { messages } of await app.stream(inputs, {
     ...config,
     streamMode: "values",
   })) {
     const msg = messages[messages?.length - 1];
-    //console.log(messages)
     if (msg?.content) {
       if (msg instanceof AIMessage) {
         console.log("AI Assistant:", msg.content);
         console.log("-----\n");
-      } else if (msg instanceof HumanMessage) {
-        console.log("User:", msg.content);
-        console.log("-----\n");
       }
+      // } else if (msg instanceof HumanMessage) {
+      //   console.log("User:", msg.content);
+      //   console.log("-----\n");
+      // }
     }
   }
 };
 
 const run = async () => {
-  await sendMessage("What is weather in New York?");
-  await sendMessage("Is cold in New York now?");
+  await loadMemoryVectorStore();
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const answer = await question("User: ");
+    await sendMessage(answer);
+  }
 };
 run();
