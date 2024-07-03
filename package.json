@@ -28,6 +28,7 @@
     "prettier": "^3.3.2",
     "ts-node": "^10.9.2",
     "tsx": "^4.15.7",
+    "weaviate-client": "^3.0.8",
     "weaviate-ts-client": "^2.2.0"
   },
   "devDependencies": {
