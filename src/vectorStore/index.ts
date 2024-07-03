@@ -1,8 +1,8 @@
+import "dotenv/config";
 import { OpenAIEmbeddings } from "@langchain/openai";
 import weaviate from "weaviate-ts-client";
 import { WeaviateStore } from "@langchain/weaviate";
-
-import { ScoreThresholdRetriever } from "langchain/retrievers/score_threshold";
+import { Document } from "langchain/document";
 
 const { WEAVIATE_SCHEME, WEAVIATE_HOST, WEAVIATE_API_KEY, INDEX_NAME } =
   process.env;
@@ -16,16 +16,33 @@ const client = (weaviate as any).client({
     : undefined,
 });
 
-const vectorStore = new WeaviateStore(new OpenAIEmbeddings(), {
-  client,
-  indexName: INDEX_NAME || "test",
-});
-
-export const vectorStoreRetriever = ScoreThresholdRetriever.fromVectorStore(
-  vectorStore,
+const vectorStore = new WeaviateStore(
+  new OpenAIEmbeddings({
+    model: "text-embedding-3-large",
+  }),
   {
-    minSimilarityScore: 0.9, // Finds results with at least this similarity score
-    maxK: 100, // The maximum K value to use. Use it based to your chunk size to make sure you don't run out of tokens
-    kIncrement: 2, // How much to increase K by each time. It'll fetch N results, then N + kIncrement, then N + kIncrement * 2, etc.
+    client,
+    indexName: INDEX_NAME || "Test",
+    textKey: "text",
+    metadataKeys: ["foo"],
   },
 );
+
+export const loadVectorStore = async () => {
+  await vectorStore.addDocuments([
+    new Document({
+      pageContent: "Amazon is the longest river",
+      metadata: { foo: "bar" },
+    }),
+    new Document({
+      pageContent: "Mount Everest is the highest mount",
+      metadata: { foo: "bar" },
+    }),
+    new Document({
+      pageContent: "Mariana Trench is the deepest point in the earth",
+      metadata: { foo: "bar" },
+    }),
+  ]);
+  return vectorStore.similaritySearchWithScore("Amazon");
+};
+export const vectorStoreRetriever = vectorStore.asRetriever();
