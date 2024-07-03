@@ -29,6 +29,15 @@ const vectorStore = new WeaviateStore(
 );
 
 export const loadVectorStore = async () => {
+  await vectorStore.delete({
+    filter: {
+      where: {
+        operator: "Equal",
+        path: ["foo"],
+        valueText: "bar",
+      },
+    },
+  });
   await vectorStore.addDocuments([
     new Document({
       pageContent: "Amazon is the longest river",
