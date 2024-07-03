@@ -1,4 +1,4 @@
-import { WeaviateClient, WeaviateField } from "weaviate-client";
+import weaviate, { WeaviateClient, WeaviateField } from "weaviate-client";
 
 import type { EmbeddingsInterface } from "@langchain/core/embeddings";
 import { VectorStoreSchemaValues } from "./types";
@@ -66,5 +66,10 @@ export class VectorStore {
   nearTextInCollection = async (collectionName: string, nearText: string) => {
     const collection = this.client.collections.get(collectionName);
     return collection.query.nearText(nearText);
+  };
+  static getClient = async (url: string, key: string) => {
+    return await weaviate.connectToWeaviateCloud(url, {
+      authCredentials: new weaviate.ApiKey(key),
+    });
   };
 }
