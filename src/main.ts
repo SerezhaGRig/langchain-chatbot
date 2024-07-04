@@ -11,7 +11,7 @@ import { IState } from "./types";
 import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
-import { loadMemoryVectorStore } from "./vectorStore/memoryVectorStore";
+import { loadVectorStore } from "./vectorStore";
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -70,7 +70,7 @@ const sendMessage = async (message: string) => {
 };
 
 const run = async () => {
-  await loadMemoryVectorStore();
+  await loadVectorStore();
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const answer = await question("User: ");

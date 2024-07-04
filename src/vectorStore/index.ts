@@ -16,17 +16,12 @@ const client = (weaviate as any).client({
     : undefined,
 });
 
-const vectorStore = new WeaviateStore(
-  new OpenAIEmbeddings({
-    model: "text-embedding-3-large",
-  }),
-  {
-    client,
-    indexName: INDEX_NAME || "Test",
-    textKey: "text",
-    metadataKeys: ["foo"],
-  },
-);
+const vectorStore = new WeaviateStore(new OpenAIEmbeddings(), {
+  client,
+  indexName: INDEX_NAME || "Test",
+  textKey: "text",
+  metadataKeys: ["foo"],
+});
 
 export const loadVectorStore = async () => {
   await vectorStore.delete({
@@ -52,6 +47,5 @@ export const loadVectorStore = async () => {
       metadata: { foo: "bar" },
     }),
   ]);
-  return vectorStore.similaritySearchWithScore("Amazon");
 };
 export const vectorStoreRetriever = vectorStore.asRetriever();
