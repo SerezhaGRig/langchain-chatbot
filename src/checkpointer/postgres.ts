@@ -1,4 +1,4 @@
-import { Client } from "pg";
+import { Client, ClientConfig } from "pg";
 import {
   BaseCheckpointSaver,
   Checkpoint,
@@ -26,8 +26,8 @@ export class PostgresSaver extends BaseCheckpointSaver {
     this.isSetup = false;
   }
 
-  static async fromConnString(connString: string): Promise<PostgresSaver> {
-    const client = new Client({ connectionString: connString });
+  static async fromConnString(config: ClientConfig): Promise<PostgresSaver> {
+    const client = new Client(config);
     await client.connect();
     return new PostgresSaver(client);
   }
@@ -173,7 +173,7 @@ export class PostgresSaver extends BaseCheckpointSaver {
   async put(
     config: RunnableConfig,
     checkpoint: Checkpoint,
-    metadata: any,
+    metadata: CheckpointMetadata,
   ): Promise<RunnableConfig> {
     await this.setup();
     try {
@@ -188,8 +188,8 @@ export class PostgresSaver extends BaseCheckpointSaver {
         config.configurable?.thread_id,
         checkpoint.id,
         config.configurable?.checkpoint_id,
-        await this.serde.stringify(checkpoint),
-        await this.serde.stringify(metadata),
+        this.serde.stringify(checkpoint),
+        this.serde.stringify(metadata),
       ];
 
       await this.client.query(query, params);
