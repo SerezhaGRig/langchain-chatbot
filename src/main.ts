@@ -12,6 +12,8 @@ import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
 import { loadVectorStore } from "./vectorStore";
+import { SqliteSaver } from "@langchain/langgraph/dist/checkpoint/sqlite";
+
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
