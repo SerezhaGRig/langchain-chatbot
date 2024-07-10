@@ -6,6 +6,9 @@ import { CSVLoader } from "langchain/dist/document_loaders/fs/csv";
 import { TextLoader } from "langchain/dist/document_loaders/fs/text";
 import { DocxLoader } from "@langchain/community/dist/document_loaders/fs/docx";
 
+const excludeFile = [
+  "Notice of Benefit and Payment Parameters for 2025 Final Rule",
+];
 /* Load all PDFs within the specified directory */
 const run = async () => {
   const directoryLoader = new DirectoryLoader("src/documents/data/", {
@@ -27,6 +30,9 @@ const run = async () => {
 
   const splitDocs = await textSplitter.splitDocuments(docs);
   console.log({ splitDocs });
-  await vectorStore.addDocuments(splitDocs);
+  const docsToLoad = splitDocs.filter(
+    (doc) => !excludeFile.includes(doc.metadata.pdf_info_Title),
+  );
+  await vectorStore.addDocuments(docsToLoad);
 };
 run();
