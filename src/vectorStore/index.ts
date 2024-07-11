@@ -20,7 +20,6 @@ export const vectorStore = new WeaviateStore(new OpenAIEmbeddings(), {
   client,
   indexName: INDEX_NAME || "Test",
   textKey: "text",
-  metadataKeys: ["foo"],
 });
 
 export const loadVectorStore = async () => {
