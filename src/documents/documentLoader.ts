@@ -8,6 +8,12 @@ import { DocxLoader } from "@langchain/community/dist/document_loaders/fs/docx";
 
 const excludeFile = [
   "Notice of Benefit and Payment Parameters for 2025 Final Rule",
+  "ACA Law act",
+  "Medicaid & Dental benefits",
+  "From coverage to Care",
+  "What you should know about providers",
+  "Patient Protection and Affordable Care Act, HHS Notice of Benefit and Payment Parameters for 2024",
+  "regs to implement equal employemnt provision",
 ];
 /* Load all PDFs within the specified directory */
 const run = async () => {
@@ -20,7 +26,7 @@ const run = async () => {
 
   const docs = await directoryLoader.load();
 
-  console.log({ docs });
+  // console.log({ docs });
 
   /* Additional steps : Split text into chunks with any TextSplitter. You can then use it as context or save it to memory afterwards. */
   const textSplitter = new RecursiveCharacterTextSplitter({
@@ -29,10 +35,11 @@ const run = async () => {
   });
 
   const splitDocs = await textSplitter.splitDocuments(docs);
-  console.log({ splitDocs });
-  const docsToLoad = splitDocs.filter(
-    (doc) => !excludeFile.includes(doc.metadata.pdf_info_Title),
-  );
+  // console.log({ splitDocs });
+  console.log({ metadata: splitDocs.map((doc) => doc.metadata.pdf) });
+  const docsToLoad = splitDocs
+    .filter((doc) => !excludeFile.includes(doc.metadata.pdf_info_Title))
+    .map((doc) => ({ ...doc, metadata: { ...doc.metadata, pdf: undefined } }));
   await vectorStore.addDocuments(docsToLoad);
 };
 run();
