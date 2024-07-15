@@ -2,9 +2,9 @@ import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { vectorStore } from "../vectorStore";
-import { CSVLoader } from "langchain/dist/document_loaders/fs/csv";
-import { TextLoader } from "langchain/dist/document_loaders/fs/text";
-import { DocxLoader } from "@langchain/community/dist/document_loaders/fs/docx";
+import { CSVLoader } from "langchain/document_loaders/fs/csv";
+import { TextLoader } from "langchain/document_loaders/fs/text";
+import { DocxLoader } from "@langchain/community/document_loaders/fs/docx";
 
 const excludeFile = [
   "Notice of Benefit and Payment Parameters for 2025 Final Rule",
