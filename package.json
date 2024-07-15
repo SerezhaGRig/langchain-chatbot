@@ -10,7 +10,6 @@
     "build:loader": "node ./build/buildLoader.js",
     "start": "node ./esBundle/bundle.js",
     "start:loader": "node ./esBundle/documentLoader.js"
-
   },
   "keywords": [],
   "author": "",

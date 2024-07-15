@@ -24,11 +24,11 @@ const routeMessage = (state: IState) => {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
   // If no tools are called, we can finish (respond to the user)
-
+  lastMessage.tool_calls;
   if (!lastMessage.tool_calls?.length) {
     return END;
   }
-  console.log("tool call");
+  // console.info("tool call", { tool_calls: lastMessage.tool_calls });
   // Otherwise if there is, we continue and call the tools
   return "tools";
 };
