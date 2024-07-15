@@ -1,7 +1,11 @@
 import { createRetrieverTool } from "langchain/tools/retriever";
 import { vectorStore } from "../vectorStore";
 
-const documents = [
+const files: {
+  source: string;
+  description: string;
+  name: string;
+}[] = [
   {
     source: "Notice of Benefit and Payment Parameters for 2025 Final Rule",
     name: "notice-of-benefit-and-payment-parameters-for-2025-final-rule",
@@ -46,20 +50,20 @@ const documents = [
       "The EEOC has issued final revised regulations and interpretive guidance to implement the ADA Amendments Act of 2008, which enhances the enforcement of title I of the ADA prohibiting employment discrimination based on disability. These regulations will become effective on May 24, 2011, and further information can be obtained by contacting the EEOC's Office of Legal Counsel.",
   },
 ];
-export const retrieverTools = documents.map((doc) =>
+export const retrieverTools = files.map((file) =>
   createRetrieverTool(
     vectorStore.asRetriever({
       filter: {
         where: {
           operator: "Like",
           path: ["source"],
-          valueText: `*${doc.source}*`,
+          valueText: `*${file.source}*`,
         },
       },
     }),
     {
-      name: doc.name,
-      description: doc.description,
+      name: file.name,
+      description: file.description,
     },
   ),
 );
