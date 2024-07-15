@@ -27,11 +27,6 @@ const documents = [
       'A provider network is a list of doctors, health care providers, and hospitals that a health plan contracts with to offer medical care to its members, known as "network providers" or "in-network providers." To see if your doctor is in a plan’s network before choosing a Health Insurance Marketplace® plan, make a list of your providers, search the provider network for each specific plan, or call the insurance company’s customer service, and compare plans on HealthCare.gov.',
   },
   {
-    name: "the-centers-for-medicare-medicaid-services-cms",
-    description:
-      "The HHS Notice of Benefit and Payment Parameters for 2025 final rule, released by CMS, sets new standards for issuers and Marketplaces and includes policies impacting Medicaid, CHIP, and the Basic Health Program. These changes aim to advance health equity by increasing access to healthcare services, simplifying choice, improving plan selection, and enhancing consumer protections.",
-  },
-  {
     source: "What you should know about providers",
     name: "provider-info",
     description:
