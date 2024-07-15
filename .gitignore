@@ -4,3 +4,4 @@
 ./esBundle
 .build
 ./src/documents/data
+.env
