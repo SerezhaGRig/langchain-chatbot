@@ -24,7 +24,6 @@ const routeMessage = (state: IState) => {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
   // If no tools are called, we can finish (respond to the user)
-  lastMessage.tool_calls;
   if (!lastMessage.tool_calls?.length) {
     return END;
   }
