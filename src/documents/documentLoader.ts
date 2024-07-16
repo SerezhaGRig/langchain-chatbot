@@ -37,9 +37,13 @@ const run = async () => {
   const splitDocs = await textSplitter.splitDocuments(docs);
   // console.log({ splitDocs });
   console.log({ metadata: splitDocs.map((doc) => doc.metadata.pdf) });
+  const timestamp = Date.now();
   const docsToLoad = splitDocs
     .filter((doc) => !excludeFile.includes(doc.metadata.pdf_info_Title))
-    .map((doc) => ({ ...doc, metadata: { ...doc.metadata, pdf: undefined } }));
+    .map((doc) => ({
+      ...doc,
+      metadata: { ...doc.metadata, timestamp, pdf: undefined },
+    }));
   await vectorStore.addDocuments(docsToLoad);
 };
 run();
