@@ -21,9 +21,27 @@ const graphState: StateGraphArgs<IState>["channels"] = {
 };
 
 const routeMessage = (state: IState) => {
-  const { messages } = state;
+  const { messages, age, zipCode } = state;
+  let interestedInPlansCalled = false;
   const lastMessage = messages[messages.length - 1] as AIMessage;
   // If no tools are called, we can finish (respond to the user)
+  // Check if the specific tool is called
+  if (
+    lastMessage.tool_calls.find((toolCall) => {
+      return toolCall.name === "interested-in-plans";
+    })
+  ) {
+    interestedInPlansCalled = true;
+  }
+
+  // If the specific tool is called and user name or zip code is not collected
+  if (interestedInPlansCalled) {
+    if (!age) {
+      return "collectAge";
+    } else if (!zipCode) {
+      return "collectZipCode";
+    }
+  }
   if (!lastMessage.tool_calls?.length) {
     return END;
   }
@@ -36,11 +54,31 @@ const workflow = new StateGraph<IState>({
   channels: graphState,
 })
   .addNode("agent", callModel)
-  .addNode("tools", toolNode);
+  .addNode("tools", toolNode)
+  .addNode("collectName", (state) => {
+    const { messages } = state;
+    const lastMessage = messages[messages.length - 1] as HumanMessage;
+    const { content } = lastMessage;
+    if (typeof content === "string") {
+      state.age = content;
+    }
+    return state;
+  })
+  .addNode("collectZipCode", (state) => {
+    const { messages } = state;
+    const lastMessage = messages[messages.length - 1] as HumanMessage;
+    const { content } = lastMessage;
+    if (typeof content === "string") {
+      state.age = content;
+    }
+    return state;
+  });
 
 workflow
   .addEdge(START, "agent")
   .addConditionalEdges("agent", routeMessage)
+  .addConditionalEdges("collectName", routeMessage)
+  .addConditionalEdges("collectZipCode", routeMessage)
   .addEdge("tools", "agent");
 
 const memory = new MemorySaver();
