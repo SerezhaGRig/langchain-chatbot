@@ -11,6 +11,7 @@ import { IState } from "./types";
 import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
+import { callPlanTool } from "./tools/interestedInPlansTool";
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -41,6 +42,7 @@ const routeMessage = (state: IState) => {
     } else if (!zipCode) {
       return "collectZipCode";
     }
+    return "plans";
   }
   if (!lastMessage.tool_calls?.length) {
     return END;
@@ -55,6 +57,7 @@ const workflow = new StateGraph<IState>({
 })
   .addNode("agent", callModel)
   .addNode("tools", toolNode)
+  .addNode("plans", callPlanTool)
   .addNode("collectName", (state) => {
     const { messages } = state;
     const lastMessage = messages[messages.length - 1] as HumanMessage;
@@ -79,6 +82,7 @@ workflow
   .addConditionalEdges("agent", routeMessage)
   .addConditionalEdges("collectName", routeMessage)
   .addConditionalEdges("collectZipCode", routeMessage)
+  .addEdge("plans", "agent")
   .addEdge("tools", "agent");
 
 const memory = new MemorySaver();

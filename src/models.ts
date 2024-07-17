@@ -9,5 +9,5 @@ const boundModel = models.bindTools(tools);
 export const callModel = async (state: IState, config?: RunnableConfig) => {
   const { messages } = state;
   const response = await boundModel.invoke(messages, config);
-  return { messages: [response] };
+  return { ...state, messages: [response] };
 };
