@@ -2,7 +2,6 @@ import { BaseMessage } from "@langchain/core/messages";
 import {
   MemorySaver,
   StateGraphArgs,
-  END,
   START,
   StateGraph,
 } from "@langchain/langgraph";
@@ -12,6 +11,11 @@ import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
 import { callPlanTool } from "./tools/interestedInPlansTool";
+import { messageRouteHandler } from "./route/handlers";
+import {
+  collectAgeNodeHandler,
+  collectZipCodeNodeHandler,
+} from "./node/handlers";
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -21,75 +25,28 @@ const graphState: StateGraphArgs<IState>["channels"] = {
   },
 };
 
-const routeMessage = (state: IState) => {
-  const { messages, age, zipCode } = state;
-  let interestedInPlansCalled = false;
-  const lastMessage = messages[messages.length - 1] as AIMessage;
-  // If no tools are called, we can finish (respond to the user)
-  // Check if the specific tool is called
-  if (
-    lastMessage.tool_calls.find((toolCall) => {
-      return toolCall.name === "interested-in-plans";
-    })
-  ) {
-    interestedInPlansCalled = true;
-  }
-
-  // If the specific tool is called and user name or zip code is not collected
-  if (interestedInPlansCalled) {
-    if (!age) {
-      return "collectAge";
-    } else if (!zipCode) {
-      return "collectZipCode";
-    }
-    return "plans";
-  }
-  if (!lastMessage.tool_calls?.length) {
-    return END;
-  }
-  // console.info("tool call", { tool_calls: lastMessage.tool_calls });
-  // Otherwise if there is, we continue and call the tools
-  return "tools";
-};
-
 const workflow = new StateGraph<IState>({
   channels: graphState,
 })
   .addNode("agent", callModel)
   .addNode("tools", toolNode)
   .addNode("plans", callPlanTool)
-  .addNode("collectName", (state) => {
-    const { messages } = state;
-    const lastMessage = messages[messages.length - 1] as HumanMessage;
-    const { content } = lastMessage;
-    if (typeof content === "string") {
-      state.age = content;
-    }
-    return state;
-  })
-  .addNode("collectZipCode", (state) => {
-    const { messages } = state;
-    const lastMessage = messages[messages.length - 1] as HumanMessage;
-    const { content } = lastMessage;
-    if (typeof content === "string") {
-      state.age = content;
-    }
-    return state;
-  });
+  .addNode("collectAge", collectAgeNodeHandler)
+  .addNode("collectZipCode", collectZipCodeNodeHandler);
 
 workflow
   .addEdge(START, "agent")
-  .addConditionalEdges("agent", routeMessage)
-  .addConditionalEdges("collectName", routeMessage)
-  .addConditionalEdges("collectZipCode", routeMessage)
+  .addConditionalEdges("agent", messageRouteHandler)
+  .addConditionalEdges("collectAge", messageRouteHandler)
+  .addConditionalEdges("collectZipCode", messageRouteHandler)
   .addEdge("plans", "agent")
   .addEdge("tools", "agent");
 
 const memory = new MemorySaver();
 const app = workflow.compile({ checkpointer: memory });
 
-const sendMessage = async (message: string) => {
-  const config = { configurable: { thread_id: "conversation-num-200" } };
+const sendMessage = async (message: string, threadId: string) => {
+  const config = { configurable: { thread_id: threadId } };
   const inputs = { messages: [new HumanMessage({ content: message })] };
   for await (const { messages } of await app.stream(inputs, {
     ...config,
@@ -113,7 +70,7 @@ const run = async () => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const answer = await question("User: ");
-    await sendMessage(answer);
+    await sendMessage(answer, "conversation-num-201");
   }
 };
 run();
