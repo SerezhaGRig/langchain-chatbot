@@ -1,17 +1,15 @@
 import { BaseMessage } from "@langchain/core/messages";
-import {
-  MemorySaver,
-  StateGraphArgs,
-  END,
-  START,
-  StateGraph,
-} from "@langchain/langgraph";
+import { StateGraphArgs, END, START, StateGraph } from "@langchain/langgraph";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { IState } from "./types";
 import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
 import { loadMemoryVectorStore } from "./vectorStore/memoryVectorStore";
+import { PostgresSaver } from "./checkpointer/postgres";
+import { getPostgresConfig } from "./checkpointer/config";
+
+const checkpointer = new PostgresSaver(getPostgresConfig());
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -45,8 +43,7 @@ workflow
   .addConditionalEdges("agent", routeMessage)
   .addEdge("tools", "agent");
 
-const memory = new MemorySaver();
-const app = workflow.compile({ checkpointer: memory });
+const app = workflow.compile({ checkpointer });
 
 const sendMessage = async (message: string) => {
   const config = { configurable: { thread_id: "conversation-num-200" } };
