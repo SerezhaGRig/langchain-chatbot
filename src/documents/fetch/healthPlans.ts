@@ -2,7 +2,7 @@ import axios from "axios";
 import { createDocumentFromResponse } from "./responseFormatter";
 import { calculateDOBFromAge } from "./dobCalculator";
 
-export const getSearchHealthPlans = (apiKey: string) => {
+export const getSearchHealthPlans = (api: string, apiKey: string, year: string) => {
   const searchHealthPlans = async ({
     zipCode,
     householdIncome,
@@ -20,7 +20,7 @@ export const getSearchHealthPlans = (apiKey: string) => {
     state?: string;
     householdIncome?: number;
   }): Promise<string> => {
-    const endpoint = `https://marketplace.api.healthcare.gov/api/v1/plans/search?apikey=${apiKey}&year=2024`; // Replace with the actual API endpoint
+    const endpoint = `${api}?apikey=${apiKey}&year=${year}`; // Replace with the actual API endpoint
 
     try {
       const { data } = await axios.post(endpoint, {
@@ -38,6 +38,7 @@ export const getSearchHealthPlans = (apiKey: string) => {
           })),
         },
         market: "Individual",
+        limit: 1
       });
       return createDocumentFromResponse(data);
     } catch (error) {

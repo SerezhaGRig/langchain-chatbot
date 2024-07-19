@@ -2,7 +2,11 @@ import { DynamicStructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 import { getSearchHealthPlans } from "../documents/fetch/healthPlans";
 
-const { MARKETPLACE_API_KEY } = process.env;
+const {
+  MARKETPLACE_API_KEY,
+  MARKETPLACE_PLANS_SEARCH_API,
+  MARKETPLACE_PLANS_SEARCH_API_YEAR
+} = process.env;
 
 export const healthInsurancePlans = new DynamicStructuredTool({
   name: "health-insurance-plan",
@@ -32,7 +36,7 @@ export const healthInsurancePlans = new DynamicStructuredTool({
       .describe("household people members info age and tobacco use status"),
   }),
   func: async (params) => {
-    const searchHealthPlans = getSearchHealthPlans(MARKETPLACE_API_KEY);
+    const searchHealthPlans = getSearchHealthPlans(MARKETPLACE_PLANS_SEARCH_API,MARKETPLACE_API_KEY,MARKETPLACE_PLANS_SEARCH_API_YEAR);
     return await searchHealthPlans(params);
   },
 });
