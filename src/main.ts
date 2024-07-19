@@ -23,11 +23,10 @@ const routeMessage = (state: IState) => {
   const { messages } = state;
   const lastMessage = messages[messages.length - 1] as AIMessage;
   // If no tools are called, we can finish (respond to the user)
-
   if (!lastMessage.tool_calls?.length) {
     return END;
   }
-  console.log("tool call");
+  // console.info("tool call", { tool_calls: lastMessage.tool_calls });
   // Otherwise if there is, we continue and call the tools
   return "tools";
 };
@@ -67,7 +66,6 @@ const sendMessage = async (message: string) => {
 };
 
 const run = async () => {
-  await loadMemoryVectorStore();
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const answer = await question("User: ");
