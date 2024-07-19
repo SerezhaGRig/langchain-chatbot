@@ -19,6 +19,7 @@
     "@langchain/groq": "^0.0.13",
     "@langchain/langgraph": "^0.0.25",
     "@langchain/weaviate": "^0.0.4",
+    "axios": "^1.7.2",
     "better-sqlite3": "^9.6.0",
     "dotenv": "^16.4.5",
     "eslint-plugin-import": "^2.29.1",
