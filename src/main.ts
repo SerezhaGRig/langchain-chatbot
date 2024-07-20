@@ -5,11 +5,8 @@ import { IState } from "./types";
 import { callModel } from "./models";
 import { toolNode } from "./tools";
 import { question } from "./helper";
-import { loadMemoryVectorStore } from "./vectorStore/memoryVectorStore";
 import { PostgresSaver } from "./checkpointer/postgres";
 import { getPostgresConfig } from "./checkpointer/config";
-
-const checkpointer = new PostgresSaver(getPostgresConfig());
 
 // This defines the agent state
 const graphState: StateGraphArgs<IState>["channels"] = {
@@ -42,9 +39,7 @@ workflow
   .addConditionalEdges("agent", routeMessage)
   .addEdge("tools", "agent");
 
-const app = workflow.compile({ checkpointer });
-
-const sendMessage = async (message: string) => {
+const sendMessage = async (app: any, message: string) => {
   const config = { configurable: { thread_id: "conversation-num-200" } };
   const inputs = { messages: [new HumanMessage({ content: message })] };
   for await (const { messages } of await app.stream(inputs, {
@@ -66,10 +61,12 @@ const sendMessage = async (message: string) => {
 };
 
 const run = async () => {
+  const checkpointer = await PostgresSaver.fromConnString(getPostgresConfig());
+  const app = workflow.compile({ checkpointer });
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const answer = await question("User: ");
-    await sendMessage(answer);
+    await sendMessage(app, answer);
   }
 };
 run();
